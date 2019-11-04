@@ -12,7 +12,7 @@ Byte | Bits 7&6 | Description
 ---- | -------- | ---------------------------------------------
 0    | 00       | Character is width 2..4
 0    | 10       | Character is width 1 (final byte)
-0    | x1       | Character is width 5
+0    | 01       | Character is width 5
 1..3 | 10       | For width 2..4 character, marks final column
 1    | aa       | bits 1&0 of final column (for width 5)
 2    | bb       | bits 2&3 of final column (for width 5)
