@@ -3,7 +3,7 @@ Variable width font for Arduboy that is 6 pixels high.
 
 Each character has a width from 1 to 5.  Height is 6 pixels.
 Each character uses 4 bytes of memory.
-The first 6 bits and pixel data and the upper 2 bits are used to encode the width.
+The first 6 bits is pixel data and the upper 2 bits are used to encode the width.
 For character of width 5, use bits 6&7 of the last 3 bytes to construct the 5th column of pixel data.
 
 Here is how to intepret bits 6&7 for each byte:
