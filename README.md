@@ -6,6 +6,8 @@ Each character uses 4 bytes of memory.
 The first 6 bits is pixel data and the upper 2 bits are used to encode the width.
 For character of width 5, use bits 6&7 of the last 3 bytes to construct the 5th column of pixel data.
 
+The font has 64 characters (no lower case).
+
 Here is how to intepret bits 6&7 for each byte:
 
 Byte | Bits 7&6 | Description
