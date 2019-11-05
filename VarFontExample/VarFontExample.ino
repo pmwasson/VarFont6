@@ -19,8 +19,12 @@ void loop() {
   font6.print("@ABCDEFGHIJKLMNOPQRSTUVWXYZ\n");
   font6.print("[\\]^_\n\n");
   font6.print("THE QUICK BROWN FOX JUMPS OVER\n");
-  font6.print("THE LAZY DOG.\n");
-  font6.print("A = (5 * 6 + 17) % 3");
+  font6.print("THE LAZY DOG.");
+
+  // Add a blinking cursor for fun
+  if ((arduboy.frameCount & 0x1f) < 16) {
+    arduboy.fillRect(font6.cursorX,font6.cursorY,3,6);
+  }
   
   arduboy.display();
 }
