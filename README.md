@@ -20,3 +20,7 @@ Byte | Bits 7&6 | Description
 2    | bb       | bits 2&3 of final column (for width 5)
 3    | cc       | bits 4&5 of final column (for width 5), 5th column = ccbbaa
 
+
+
+
+![Example screen](screen.jpg)
