@@ -14,12 +14,12 @@ void loop() {
     return;
   arduboy.clear();
   font6.setCursor(0,0);
-  font6.print("VARIABLE WIDTH FONT (6 HIGH):\n\n");
-  font6.print(" !\"#$%&'()*+-./0123456789:;<=>?\n");
-  font6.print("@ABCDEFGHIJKLMNOPQRSTUVWXYZ\n");
-  font6.print("[\\]^_\n\n");
-  font6.print("THE QUICK BROWN FOX JUMPS OVER\n");
-  font6.print("THE LAZY DOG.");
+  font6.print(F("VARIABLE WIDTH FONT (6 HIGH):\n\n"));
+  font6.print(F(" !\"#$%&'()*+-./0123456789:;<=>?\n"));
+  font6.print(F("@ABCDEFGHIJKLMNOPQRSTUVWXYZ\n"));
+  font6.print(F("[\\]^_\n\n"));
+  font6.print(F("THE QUICK BROWN FOX JUMPS OVER\n"));
+  font6.print(F("THE LAZY DOG."));
 
   // Add a blinking cursor for fun
   if ((arduboy.frameCount & 0x1f) < 16) {

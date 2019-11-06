@@ -16,7 +16,7 @@ extern Arduboy2 arduboy;
 
 static const unsigned char font[] PROGMEM =
 {                           // Char : Width
-  0x1E, 0x21, 0x2D, 0x9D,   // @ : 4 
+  0x1E, 0x21, 0x2D, 0xAE,   // @ : 4 
   0x3E, 0x09, 0xBE, 0x00,   // A : 3
   0x3F, 0x25, 0x9A, 0x00,   // B : 3 
   0x1E, 0x21, 0xA1, 0x00,   // C : 3
@@ -54,14 +54,14 @@ static const unsigned char font[] PROGMEM =
   0x52, 0xBF, 0x12, 0x7F,   // # : 5
   0x52, 0x55, 0xBF, 0x15,   // $ : 5 
   0x31, 0x0C, 0xA3, 0x00,   // % : 3
-  0x1E, 0x25, 0x16, 0xA8,   // & : 4
+  0x1A, 0x25, 0x1A, 0xA8,   // & : 4
   0x83, 0x00, 0x00, 0x00,   // ' : 1  
   0x1E, 0xA1, 0x00, 0x00,   // ( : 2
   0x21, 0x9E, 0x00, 0x00,   // ) : 2
-  0x14, 0x0E, 0x94, 0x00,   // * : 3
-  0x04, 0x0E, 0x84, 0x00,   // + : 3
+  0x14, 0x08, 0x94, 0x00,   // * : 3
+  0x08, 0x1C, 0x88, 0x00,   // + : 3
   0x20, 0x90, 0x00, 0x00,   // , : 2 
-  0x04, 0x04, 0x84, 0x00,   // - : 3 
+  0x08, 0x08, 0x88, 0x00,   // - : 3 
   0xA0, 0x00, 0x00, 0x00,   // . : 1
   0x30, 0x0C, 0x83, 0x00,   // / : 3
   0x1E, 0x21, 0x9E, 0x00,   // 0 : 3
@@ -82,75 +82,70 @@ static const unsigned char font[] PROGMEM =
   0x01, 0x29, 0x86, 0x00    // ? : 3
 };
 
-VarFont6::VarFont6() {
-  cursorX = cursorY = baseX = 0;
-  inverse = false;
-}
-
 size_t VarFont6::write(uint8_t c) {
-  if (c == '\n')      { cursorX = baseX; cursorY += LINE_HEIGHT; }
+  if (c == '\n')      { cursorX = baseX; cursorY += lineHeight; }
   else {
     size_t width = printChar(c, cursorX, cursorY);
-    cursorX += width + LETTER_SPACING;
+    cursorX += width + letterSpacing;
   }
   return 1;
 }
 
-size_t VarFont6::printChar(const char c, const int8_t x, int8_t y) {
+size_t VarFont6::printChar(char c, int8_t x, int8_t y) {
   // Index into font (map lowercase to uppercase)
-  uint8_t idx = (c & ((c < 96) ? 0x3f : 0x1f)) * 4;
+  uint8_t fontIndex = (c & ((c < 96) ? 0x3f : 0x1f)) * 4;
 
   // Y offset
   uint8_t offset = y & 0x7;
   
   // Pointer into screen buffer
-  uint16_t ptr = WIDTH * (y >> 3) + x;
+  uint16_t screenIndex = WIDTH * (y >> 3) + x;
   
   uint8_t fifthCol = 0;
   bool    useFifth = false;
   
   for (uint8_t i=0 ; i < 5; i++) {
-    uint8_t data, col;
+    uint8_t data, column;
     if (i < 4) {
-      data = pgm_read_byte(font + idx + i);
-      col = data & 0x3f; // 6 bits
+      data = pgm_read_byte(font + fontIndex + i);
+      column = data & 0x3f; // 6 bits
       fifthCol = (fifthCol >> 2) | (data & 0xc0); // Save upper bits
       if (i==0) {
-        useFifth = (data & 0x40) == 0x40;
+        useFifth = (data & fiveWideBit) != 0;
       }
     }
     else {
-      col = fifthCol >> 2;
+      data = 0;
+      column = fifthCol >> 2;
     }
 
-    if (ptr < WIDTH*(HEIGHT>>3))
+    if (screenIndex < WIDTH*(HEIGHT>>3))
       if (inverse) {
-        arduboy.sBuffer[ptr] &= ~(col << offset);      
+        arduboy.sBuffer[screenIndex] &= ~(column << offset);      
       } else {
-        arduboy.sBuffer[ptr] |= col << offset;
+        arduboy.sBuffer[screenIndex] |= column << offset;
       }
-    if ((offset > 1) && (ptr + 128 < WIDTH*(HEIGHT>>3))) {
+    if ((offset > 1) && (screenIndex + 128 < WIDTH*(HEIGHT>>3))) {
       if (inverse) {
-        arduboy.sBuffer[ptr+128] &= ~(col >> (8 - offset));
+        arduboy.sBuffer[screenIndex+128] &= ~(column >> (8 - offset));
       } else {
-        arduboy.sBuffer[ptr+128] |= col >> (8 - offset);
+        arduboy.sBuffer[screenIndex+128] |= column >> (8 - offset);
       } 
     }
-    if (!useFifth && ((data & 0x80) == 0x80)) {
+    if (!useFifth && ((data & stopBit) != 0)) {
       return i+1; 
     }
-    ptr++;
+    screenIndex++;
   }
   return 5; // max width
 }
 
-void VarFont6::setCursor(const int8_t x, const int8_t y, const bool inv) {
+void VarFont6::setCursor(int8_t x, int8_t y) {
   cursorX = x;
   baseX = x;
   cursorY = y;
-  inverse = inv;
 }
 
-void VarFont6::setInverse(const bool inv) {
+void VarFont6::setInverse(bool inv) {
   inverse = inv;
 }
